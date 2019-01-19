@@ -22,6 +22,7 @@ Plug 'Yggdroot/indentLine' " the vertical line to high light indent
 Plug 'luochen1990/rainbow' " color the symetric notation like {} [] ()
 Plug 'majutsushi/tagbar' " requirement: '$ sudo apt-get install exuberant-ctags'
 Plug 'ntpeters/vim-better-whitespace'
+Plug 'vim-syntastic/syntastic'
 
 " ---- Search
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
@@ -144,16 +145,23 @@ function! ChompedSystem( ... )
 endfunction
 let g:python3_host_prog = ChompedSystem('which python3')
 
-" manully trigger completion using tab
-call deoplete#custom#buffer_option('auto_complete', v:false)
-function! s:check_back_space() abort "{{{
-    let col = col('.') - 1
-    return !col || getline('.')[col - 1]  =~ '\s'
-endfunction"}}}
-inoremap <silent><expr> <TAB>
-    \ pumvisible() ? "\<C-n>" :
-    \ <SID>check_back_space() ? "\<TAB>" :
-    \ deoplete#mappings#manual_complete()
+" automatically trigger completion
+inoremap <silent><expr> <Tab> pumvisible() ? "\<C-n>" : "<Tab>"
+
+" ---- Syntastic
+let g:syntastic_python_checkers = ['pep8']
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+
+nnoremap <leader>e :Errors<CR>
+nnoremap <Leader>ee :SyntasticToggleMode<CR>
+
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_check_on_open = 0
+let g:syntastic_check_on_wq = 0
+
 
 " ---- NERDTree
 let g:NERDTreeShowBookmarks=1
@@ -229,6 +237,7 @@ endif
 " ---- 80 coding line
 highlight ColorColumn ctermbg=235
 let &colorcolumn=join(range(81,300),",")
+
 "" This is another style for 80 coding line
 " set colorcolumn=80 " coding guideline
 
